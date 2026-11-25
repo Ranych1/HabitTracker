@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HabitTracker — Трекер привычек (kinlant)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Верхняя панель навигации -->
+<header class="navbar">
+    <div class="logo">⚡ HabitTracker <span class="badge">kinlant</span></div>
+    <div class="nav-actions">
+        <span id="userEmailDisplay" class="user-email hidden"></span>
+        <!-- Переключатель тёмной темы (US-06) -->
+        <button id="themeToggleBtn" class="btn btn-icon" title="Переключить тему">🌙 Тема</button>
+        <button id="logoutBtn" class="btn btn-outline hidden">Выйти</button>
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- Блок уведомлений об ошибках / успехе -->
+    <div id="alertBox" class="alert hidden"></div>
+
+    <!-- ЭКРАН 1: Вход и регистрация (US-01) -->
+    <section id="authSection" class="card auth-card">
+        <div class="tabs">
+            <button id="tabLogin" class="tab active" onclick="switchAuthMode('login')">Вход</button>
+            <button id="tabRegister" class="tab" onclick="switchAuthMode('register')">Регистрация</button>
+        </div>
+
+        <h2 id="authTitle">Вход в систему</h2>
+        <p class="subtitle">Демо-доступ: <b>demo@kinlant.ru</b> / пароль: <b>1234</b></p>
+
+        <form id="authForm" onsubmit="handleAuthSubmit(event)">
+            <div class="form-group">
+                <label for="emailInput">Email</label>
+                <input type="email" id="emailInput" placeholder="Введите ваш email" required>
+            </div>
+            <div class="form-group">
+                <label for="passwordInput">Пароль</label>
+                <input type="password" id="passwordInput" placeholder="Минимум 4 символа" required>
+            </div>
+            <button type="submit" id="authSubmitBtn" class="btn btn-primary full-width">Войти</button>
+        </form>
+    </section>
+
+    <!-- ЭКРАН 2: Главное рабочее пространство (US-02, US-03, US-04, US-05) -->
+    <section id="appSection" class="hidden">
+
+        <!-- Статистика за последние 7 дней (US-05) -->
+        <div class="card stats-card">
+            <div class="card-header">
+                <h3>📊 Статистика за неделю</h3>
+                <span class="subtitle">Выполнено / Запланировано по дням</span>
+            </div>
+            <div id="weeklyStatsContainer" class="stats-grid"></div>
+        </div>
+
+        <!-- Панель управления привычками -->
+        <div class="card">
+            <div class="card-header">
+                <div class="tabs">
+                    <button id="viewTodayBtn" class="tab active" onclick="switchHabitView('today')">
+                        📅 На сегодня
+                    </button>
+                    <button id="viewAllBtn" class="tab" onclick="switchHabitView('all')">
+                        📋 Все привычки
+                    </button>
+                </div>
+                <button class="btn btn-primary" onclick="openHabitModal()">+ Добавить привычку</button>
+            </div>
+
+            <!-- Контейнер для списка привычек (US-03, US-04) -->
+            <div id="habitsList" class="habits-list"></div>
+
+            <!-- Состояние "пусто" (критерий US-03) -->
+            <div id="emptyState" class="empty-state hidden">
+                <p>На выбранный список пока нет привычек.</p>
+                <button class="btn btn-outline" onclick="openHabitModal()">Создать первую привычку</button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- МОДАЛЬНОЕ ОКНО: Создание и редактирование привычки (US-02) -->
+<div id="habitModal" class="modal-overlay hidden">
+    <div class="modal card">
+        <h3 id="modalTitle">Новая привычка</h3>
+        <form id="habitForm" onsubmit="handleHabitSave(event)">
+            <input type="hidden" id="habitIdInput">
+
+            <div class="form-group">
+                <label for="habitTitleInput">Название привычки *</label>
+                <input type="text" id="habitTitleInput" placeholder="Например: Тренировка в зале">
+            </div>
+
+            <div class="form-group">
+                <label for="habitDescInput">Описание / цель</label>
+                <textarea id="habitDescInput" rows="3" placeholder="Например: 45 минут базовых упражнений"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Дни недели</label>
+                <div class="days-selector">
+                    <label><input type="checkbox" name="day" value="1" checked> Пн</label>
+                    <label><input type="checkbox" name="day" value="2" checked> Вт</label>
+                    <label><input type="checkbox" name="day" value="3" checked> Ср</label>
+                    <label><input type="checkbox" name="day" value="4" checked> Чт</label>
+                    <label><input type="checkbox" name="day" value="5" checked> Пт</label>
+                    <label><input type="checkbox" name="day" value="6" checked> Сб</label>
+                    <label><input type="checkbox" name="day" value="7" checked> Вс</label>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="closeHabitModal()">Отмена</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
