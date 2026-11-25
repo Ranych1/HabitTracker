@@ -1,11 +1,14 @@
 package com.kinlant.habittracker;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,6 +20,8 @@ class HabitTrackerApplicationTests {
 
     @Autowired
     private MockMvc mockMvc;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void contextLoadsAndServesHomePage() throws Exception {
@@ -49,6 +54,18 @@ class HabitTrackerApplicationTests {
 
     @Test
     void habitsEndpointResponds() throws Exception {
-        mockMvc.perform(get("/api/habits")).andExpect(status().is2xxSuccessful());
+        MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"demo@kinlant.ru\",\"password\":\"1234\"}"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String json = loginResult.getResponse().getContentAsString();
+        JsonNode rootNode = objectMapper.readTree(json);
+        String token = rootNode.get("token").asText();
+
+        mockMvc.perform(get("/api/habits")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().is2xxSuccessful());
     }
 }
